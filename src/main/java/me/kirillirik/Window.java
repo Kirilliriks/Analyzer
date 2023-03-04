@@ -7,6 +7,9 @@ import imgui.extension.implot.ImPlotContext;
 import imgui.flag.ImGuiConfigFlags;
 import imgui.gl3.ImGuiImplGl3;
 import imgui.glfw.ImGuiImplGlfw;
+import me.kirillirik.analyzer.Analyzer;
+import me.kirillirik.analyzer.ImageAnalyzer;
+import me.kirillirik.analyzer.TextAnalyzer;
 import org.lwjgl.glfw.Callbacks;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
@@ -31,7 +34,7 @@ public final class Window {
 
     public Window() {
         glslVersion = null;
-        analyzer = new Analyzer("test.txt");
+        analyzer = new ImageAnalyzer();
 
         analyzer.analyze();
     }
