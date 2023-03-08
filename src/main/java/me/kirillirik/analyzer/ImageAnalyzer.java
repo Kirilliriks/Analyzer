@@ -1,10 +1,6 @@
 package me.kirillirik.analyzer;
 
 import imgui.ImGui;
-import imgui.ImVec2;
-import imgui.extension.implot.ImPlot;
-import imgui.extension.implot.flag.ImPlotAxisFlags;
-import imgui.flag.ImGuiCond;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -35,14 +31,23 @@ public final class ImageAnalyzer extends Analyzer {
                 final int rgb = image.getRGB(x, y);
                 //final int a = (rgb >> 24) & 0xff;
 
+                if (channel == Channel.ALL) {
+                    map.merge((char) ((rgb >> 16) & 0xff), 1, Integer::sum);
+                    map.merge((char) ((rgb >> 8) & 0xff), 1, Integer::sum);
+                    map.merge((char) (rgb & 0xff), 1, Integer::sum);
+                    length += 3;
+                    continue;
+                }
+
                 final int value = switch (channel) {
-                    case RED ->   (rgb >> 16) & 0xff;
-                    case GREEN -> (rgb >> 8 ) & 0xff;
-                    case BLUE ->  (rgb      ) & 0xff;
+                    case RED -> (rgb >> 16) & 0xff;
+                    case GREEN -> (rgb >> 8) & 0xff;
+                    case BLUE -> (rgb) & 0xff;
+                    case ALL -> throw new IllegalStateException();
                 };
                 map.merge((char) value, 1, Integer::sum);
 
-                length += 3;
+                length += 1;
             }
         }
     }
@@ -75,12 +80,18 @@ public final class ImageAnalyzer extends Analyzer {
             analyze();
         }
 
+        if (ImGui.radioButton("ALL", channel == Channel.ALL)) {
+            channel = Channel.ALL;
+            analyze();
+        }
+
         super.update();
     }
 
     public enum Channel {
         RED,
         GREEN,
-        BLUE
+        BLUE,
+        ALL
     }
 }

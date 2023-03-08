@@ -51,18 +51,23 @@ public abstract class Analyzer {
 
             for (final var entry : map.entrySet()) {
                 final double p = (double) entry.getValue() / (double) length;
-                final double h = p * (Math.log(p) / Math.log(2.0f));
 
-                entropy -= h;
+                double h = 0;
+                if (p > 0) {
+                    h = -(p * (Math.log(p) / Math.log(2.0f)));
+                    entropy += h;
+                }
 
                 final double xPos = (0.5D + (double) count * 5);
-                final double yPos = -h;
+                final double yPos = h;
                 x[count] = xPos;
                 y[count] = yPos;
 
                 ImPlot.plotText(String.valueOf(entry.getKey()), xPos, -0.01f);
 
-                ImPlot.plotText(String.format("%.3f", yPos), xPos, yPos + 0.1f, true);
+                if (yPos != 0) {
+                    ImPlot.plotText(String.format("%.3f", yPos), xPos, yPos + 0.1f, true);
+                }
 
                 count++;
             }
@@ -71,7 +76,8 @@ public abstract class Analyzer {
 
             ImPlot.endPlot();
         }
-        ImGui.text("Entropy " + String.format("%.3f", entropy));
+
+        ImGui.text("Entropy " + (float) entropy);
 
         ImGui.end();
     }

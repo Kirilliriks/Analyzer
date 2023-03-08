@@ -1,11 +1,6 @@
 package me.kirillirik.analyzer;
 
 import imgui.ImGui;
-import imgui.ImVec2;
-import imgui.extension.implot.ImPlot;
-import imgui.extension.implot.flag.ImPlotAxisFlags;
-import imgui.flag.ImGuiCond;
-
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
