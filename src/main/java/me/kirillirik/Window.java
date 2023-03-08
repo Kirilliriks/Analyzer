@@ -9,6 +9,7 @@ import imgui.gl3.ImGuiImplGl3;
 import imgui.glfw.ImGuiImplGlfw;
 import me.kirillirik.analyzer.Analyzer;
 import me.kirillirik.analyzer.ImageAnalyzer;
+import me.kirillirik.analyzer.Selector;
 import me.kirillirik.analyzer.TextAnalyzer;
 import org.lwjgl.glfw.Callbacks;
 import org.lwjgl.glfw.GLFW;
@@ -30,13 +31,11 @@ public final class Window {
     private String glslVersion;
     private long window;
 
-    private Analyzer analyzer;
+    private Selector selector;
 
     public Window() {
         glslVersion = null;
-        analyzer = new ImageAnalyzer();
-
-        analyzer.analyze();
+        selector = new Selector();
     }
 
     public void init() {
@@ -107,7 +106,7 @@ public final class Window {
             imGuiGlfw.newFrame();
             ImGui.newFrame();
 
-            analyzer.update();
+            selector.update();
 
             ImGui.render();
             imGuiGl3.renderDrawData(ImGui.getDrawData());
