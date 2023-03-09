@@ -45,7 +45,7 @@ public abstract class Analyzer {
         int count = 0;
 
         ImPlot.setNextPlotLimitsX(-100, 0, ImGuiCond.FirstUseEver);
-        if (ImPlot.beginPlot("Plot", "Characters", "H",
+        if (ImPlot.beginPlot("Plot", "Characters", "Probabilities (Amount)",
                 new ImVec2(ImGui.getContentRegionAvailX(), ImGui.getContentRegionAvailY() - 100),
                 1, ImPlotAxisFlags.NoTickLabels, ImPlotAxisFlags.NoTickLabels)) {
 
@@ -66,7 +66,7 @@ public abstract class Analyzer {
                 ImPlot.plotText(String.valueOf(entry.getKey()), xPos, -0.01f);
 
                 if (yPos != 0) {
-                    ImPlot.plotText(String.format("%.3f", yPos), xPos, yPos + 0.1f, true);
+                    ImPlot.plotText(String.format("%.3f", yPos) + "   (" + entry.getValue() + ")", xPos, yPos + 0.1f, true);
                 }
 
                 count++;
