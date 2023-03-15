@@ -6,6 +6,7 @@ import imgui.extension.implot.ImPlot;
 import imgui.extension.implot.flag.ImPlotAxisFlags;
 import imgui.flag.ImGuiCond;
 
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -15,7 +16,7 @@ public abstract class Analyzer {
     public static final Logger LOGGER = Logger.getLogger("Analyzer");
 
     protected final String filePath;
-    protected final Map<Character, Integer> map = new HashMap<>();
+    protected final Map<Integer, Integer> map = new HashMap<>();
     protected int length = 0;
     protected double entropy = 0;
     protected boolean needClose = false;
@@ -30,8 +31,8 @@ public abstract class Analyzer {
         map.clear();
         length = 0;
 
-        for (int i = 32; i < 128; i++) {
-            map.put((char) i, 0);
+        for (int i = 0; i < 256; i++) {
+            map.put(i, 0);
         }
     }
 
@@ -40,14 +41,14 @@ public abstract class Analyzer {
     public void update() {
         entropy = 0;
 
-        final var x = new Double[map.size()];
-        final var y = new Double[map.size()];
-        int count = 0;
-
         ImPlot.setNextPlotLimitsX(-100, 0, ImGuiCond.FirstUseEver);
         if (ImPlot.beginPlot("Plot", "Characters", "Probabilities (Amount)",
                 new ImVec2(ImGui.getContentRegionAvailX(), ImGui.getContentRegionAvailY() - 100),
                 1, ImPlotAxisFlags.NoTickLabels, ImPlotAxisFlags.NoTickLabels)) {
+
+            final var x = new Double[map.size()];
+            final var y = new Double[map.size()];
+            int count = 0;
 
             for (final var entry : map.entrySet()) {
                 final double p = (double) entry.getValue() / (double) length;
@@ -63,7 +64,11 @@ public abstract class Analyzer {
                 x[count] = xPos;
                 y[count] = yPos;
 
-                ImPlot.plotText(String.valueOf(entry.getKey()), xPos, -0.01f);
+                try {
+                    ImPlot.plotText(count + " (" + new String(new byte[]{entry.getKey().byteValue()}, "cp866") + ")", xPos, -0.01f);
+                } catch (UnsupportedEncodingException e) {
+                    throw new RuntimeException(e);
+                }
 
                 if (yPos != 0) {
                     ImPlot.plotText(String.format("%.3f", yPos) + "   (" + entry.getValue() + ")", xPos, yPos + 0.1f, true);

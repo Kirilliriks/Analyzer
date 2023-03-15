@@ -1,9 +1,10 @@
 package me.kirillirik.analyzer;
 
 import imgui.ImGui;
-import java.io.BufferedReader;
-import java.io.FileReader;
+
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 public final class TextAnalyzer extends Analyzer {
 
@@ -13,25 +14,21 @@ public final class TextAnalyzer extends Analyzer {
 
     @Override
     public void analyze() {
-        try (final BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
-            String line = reader.readLine();
-            while (line != null) {
-
-                for (final char ch : line.toCharArray()) {
-                    map.merge(ch, 1, Integer::sum);
-                    length++;
-                }
-
-                line = reader.readLine();
+        try {
+            byte[] bytes = Files.readAllBytes(Path.of(filePath));
+            for (byte b : bytes) {
+                map.merge(Byte.toUnsignedInt(b), 1, Integer::sum);
+                length++;
+                System.out.println(" " + Byte.toUnsignedInt(b));
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 
     @Override
     public void update() {
-        ImGui.begin("Window");
+        ImGui.begin("Работа?");
 
         if (ImGui.button("Change analyzer")) {
             needClose = true;

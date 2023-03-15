@@ -32,9 +32,9 @@ public final class ImageAnalyzer extends Analyzer {
                 //final int a = (rgb >> 24) & 0xff;
 
                 if (channel == Channel.ALL) {
-                    map.merge((char) ((rgb >> 16) & 0xff), 1, Integer::sum);
-                    map.merge((char) ((rgb >> 8) & 0xff), 1, Integer::sum);
-                    map.merge((char) (rgb & 0xff), 1, Integer::sum);
+                    map.merge((rgb >> 16) & 0xff, 1, Integer::sum);
+                    map.merge((rgb >> 8) & 0xff, 1, Integer::sum);
+                    map.merge(rgb & 0xff, 1, Integer::sum);
                     length += 3;
                     continue;
                 }
@@ -45,7 +45,7 @@ public final class ImageAnalyzer extends Analyzer {
                     case BLUE -> (rgb) & 0xff;
                     case ALL -> throw new IllegalStateException();
                 };
-                map.merge((char) value, 1, Integer::sum);
+                map.merge(value, 1, Integer::sum);
 
                 length += 1;
             }
