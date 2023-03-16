@@ -47,6 +47,7 @@ public abstract class Analyzer {
 
         if (!showTable) {
             ImPlot.setNextPlotLimitsX(-100, 100, ImGuiCond.FirstUseEver);
+            ImPlot.setNextPlotLimitsY(-100, 100, ImGuiCond.FirstUseEver);
             if (ImPlot.beginPlot("Plot", "Characters", "Probabilities (Amount)",
                     new ImVec2(ImGui.getContentRegionAvailX(), ImGui.getContentRegionAvailY() - 100),
                     1, ImPlotAxisFlags.None, ImPlotAxisFlags.NoTickLabels)) {
@@ -70,13 +71,13 @@ public abstract class Analyzer {
                     y[count] = yPos;
 
                     try {
-                        ImPlot.plotText(count + " (" + new String(new byte[]{entry.getKey().byteValue()}, "cp866") + ")", xPos, -0.01f);
+                        ImPlot.plotText(count + " (" + new String(new byte[]{entry.getKey().byteValue()}, "cp866") + ")", xPos, -1.0f);
                     } catch (UnsupportedEncodingException e) {
                         throw new RuntimeException(e);
                     }
 
                     if (yPos != 0) {
-                        ImPlot.plotText(String.format("%.3f", h) + "   (" + entry.getValue() + ")", xPos, yPos + 0.1f, true);
+                        ImPlot.plotText(String.format("%.3f", h) + "   (" + entry.getValue() + ")", xPos, yPos + 10.0f, true);
                     }
 
                     count++;
