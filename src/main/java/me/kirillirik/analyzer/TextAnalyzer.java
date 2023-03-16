@@ -19,7 +19,6 @@ public final class TextAnalyzer extends Analyzer {
             for (byte b : bytes) {
                 map.merge(Byte.toUnsignedInt(b), 1, Integer::sum);
                 length++;
-                System.out.println(" " + Byte.toUnsignedInt(b));
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -32,6 +31,12 @@ public final class TextAnalyzer extends Analyzer {
 
         if (ImGui.button("Change analyzer")) {
             needClose = true;
+        }
+
+        ImGui.sameLine();
+
+        if (ImGui.button(showTable ? "Show graph" : "Show table")) {
+            showTable = !showTable;
         }
 
         super.update();

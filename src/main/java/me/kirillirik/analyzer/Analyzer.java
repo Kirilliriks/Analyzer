@@ -5,6 +5,7 @@ import imgui.ImVec2;
 import imgui.extension.implot.ImPlot;
 import imgui.extension.implot.flag.ImPlotAxisFlags;
 import imgui.flag.ImGuiCond;
+import imgui.flag.ImGuiTableFlags;
 
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
@@ -20,6 +21,7 @@ public abstract class Analyzer {
     protected int length = 0;
     protected double entropy = 0;
     protected boolean needClose = false;
+    protected boolean showTable = false;
 
     public Analyzer(String filePath) {
         this.filePath = filePath;
@@ -41,49 +43,97 @@ public abstract class Analyzer {
     public void update() {
         entropy = 0;
 
-        ImPlot.setNextPlotLimitsX(-100, 0, ImGuiCond.FirstUseEver);
-        if (ImPlot.beginPlot("Plot", "Characters", "Probabilities (Amount)",
-                new ImVec2(ImGui.getContentRegionAvailX(), ImGui.getContentRegionAvailY() - 100),
-                1, ImPlotAxisFlags.NoTickLabels, ImPlotAxisFlags.NoTickLabels)) {
 
-            final var x = new Double[map.size()];
-            final var y = new Double[map.size()];
-            int count = 0;
+        if (!showTable) {
+            ImPlot.setNextPlotLimitsX(-100, 100, ImGuiCond.FirstUseEver);
+            if (ImPlot.beginPlot("Plot", "Characters", "Probabilities (Amount)",
+                    new ImVec2(ImGui.getContentRegionAvailX(), ImGui.getContentRegionAvailY() - 100),
+                    1, ImPlotAxisFlags.None, ImPlotAxisFlags.NoTickLabels)) {
 
-            for (final var entry : map.entrySet()) {
-                final double p = (double) entry.getValue() / (double) length;
+                final var x = new Double[map.size()];
+                final var y = new Double[map.size()];
+                int count = 0;
 
-                double h = 0;
-                if (p > 0) {
-                    h = -(p * (Math.log(p) / Math.log(2.0f)));
-                    entropy += h;
+                for (final var entry : map.entrySet()) {
+                    final double p = (double) entry.getValue() / (double) length;
+
+                    double h = 0;
+                    if (p > 0) {
+                        h = -(p * (Math.log(p) / Math.log(2.0f)));
+                        entropy += h;
+                    }
+
+                    final double xPos = count;
+                    final double yPos = entry.getValue();
+                    x[count] = xPos;
+                    y[count] = yPos;
+
+                    try {
+                        ImPlot.plotText(count + " (" + new String(new byte[]{entry.getKey().byteValue()}, "cp866") + ")", xPos, -0.01f);
+                    } catch (UnsupportedEncodingException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                    if (yPos != 0) {
+                        ImPlot.plotText(String.format("%.3f", h) + "   (" + entry.getValue() + ")", xPos, yPos + 0.1f, true);
+                    }
+
+                    count++;
                 }
 
-                final double xPos = (0.5D + (double) count * 5);
-                final double yPos = h;
-                x[count] = xPos;
-                y[count] = yPos;
+                ImPlot.plotBars("Probabilities", x, y);
 
-                try {
-                    ImPlot.plotText(count + " (" + new String(new byte[]{entry.getKey().byteValue()}, "cp866") + ")", xPos, -0.01f);
-                } catch (UnsupportedEncodingException e) {
-                    throw new RuntimeException(e);
-                }
-
-                if (yPos != 0) {
-                    ImPlot.plotText(String.format("%.3f", yPos) + "   (" + entry.getValue() + ")", xPos, yPos + 0.1f, true);
-                }
-
-                count++;
+                ImPlot.endPlot();
             }
+        } else {
 
-            ImPlot.plotBars("Probabilities", x, y);
+            final int flags = ImGuiTableFlags.Resizable | ImGuiTableFlags.Reorderable | ImGuiTableFlags.Hideable |
+                    ImGuiTableFlags.RowBg | ImGuiTableFlags.Borders | ImGuiTableFlags.NoBordersInBody | ImGuiTableFlags.ScrollY;
 
-            ImPlot.endPlot();
+            if (ImGui.beginTable("#table", 4, flags)) {
+                ImGui.tableSetupColumn("Byte");
+                ImGui.tableSetupColumn("Char");
+                ImGui.tableSetupColumn("Count");
+                ImGui.tableSetupColumn("H");
+
+                ImGui.tableHeadersRow();
+
+                for (final var entry : map.entrySet()) {
+                    final double p = (double) entry.getValue() / (double) length;
+
+                    double h = 0;
+                    if (p > 0) {
+                        h = -(p * (Math.log(p) / Math.log(2.0f)));
+                        entropy += h;
+                    }
+
+                    final String ch;
+                    try {
+                        ch = new String(new byte[]{entry.getKey().byteValue()}, "cp866");
+                    } catch (UnsupportedEncodingException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                    ImGui.tableNextRow(ImGuiTableFlags.None, 10);
+
+                    ImGui.tableSetColumnIndex(0);
+                    ImGui.text(String.valueOf(entry.getKey()));
+
+                    ImGui.tableSetColumnIndex(1);
+                    ImGui.text(ch);
+
+                    ImGui.tableSetColumnIndex(2);
+                    ImGui.text(String.valueOf(entry.getValue()));
+
+                    ImGui.tableSetColumnIndex(3);
+                    ImGui.text(String.valueOf(h));
+                }
+
+                ImGui.endTable();
+            }
         }
 
         ImGui.text("Entropy " + (float) entropy);
-
         ImGui.end();
     }
 

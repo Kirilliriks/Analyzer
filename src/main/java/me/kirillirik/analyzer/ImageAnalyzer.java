@@ -60,6 +60,11 @@ public final class ImageAnalyzer extends Analyzer {
             needClose = true;
         }
 
+        ImGui.sameLine();
+
+        if (ImGui.button(showTable ? "Show graph" : "Show table")) {
+            showTable = !showTable;
+        }
 
         if (ImGui.radioButton("RED", channel == Channel.RED)) {
             channel = Channel.RED;
