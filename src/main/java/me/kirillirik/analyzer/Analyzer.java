@@ -4,7 +4,6 @@ import imgui.ImGui;
 import imgui.ImVec2;
 import imgui.extension.implot.ImPlot;
 import imgui.extension.implot.flag.ImPlotAxisFlags;
-import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiCond;
 import imgui.flag.ImGuiTableFlags;
 
