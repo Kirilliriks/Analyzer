@@ -35,17 +35,6 @@ public final class LFSRGenerator extends Generator {
             bits[i] = bits[i + 1];
         }
 
-        return min + (next % (max - min));
-    }
-
-    @Override
-    public void generate(int symbols) {
-        buffer.delete(0, buffer.length());
-
-        for (int i = 0; i < symbols; i++) {
-            final int number = random(94, 126);
-            System.out.println("I " + number + " C " + (char) number);
-            buffer.append((char) number);
-        }
+        return Math.abs(min + (next % (max - min)));
     }
 }

@@ -38,18 +38,19 @@ public abstract class Analyzer {
         }
     }
 
-    public abstract void analyze();
+    public void analyze() {
+
+    }
 
     public void update() {
         entropy = 0;
-
 
         if (!showTable) {
             ImPlot.setNextPlotLimitsX(-100, 100, ImGuiCond.FirstUseEver);
             ImPlot.setNextPlotLimitsY(-100, 100, ImGuiCond.FirstUseEver);
             if (ImPlot.beginPlot("Plot", "Characters", "Probabilities (Amount)",
                     new ImVec2(ImGui.getContentRegionAvailX(), ImGui.getContentRegionAvailY() - 100),
-                    1, ImPlotAxisFlags.None, ImPlotAxisFlags.NoTickLabels)) {
+                    2, ImPlotAxisFlags.AutoFit, ImPlotAxisFlags.AutoFit)) {
 
                 final var x = new Double[map.size()];
                 final var y = new Double[map.size()];

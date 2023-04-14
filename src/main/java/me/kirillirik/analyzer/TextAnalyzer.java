@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-public final class TextAnalyzer extends Analyzer {
+public class TextAnalyzer extends Analyzer {
 
     public TextAnalyzer() {
         super("test.txt");
