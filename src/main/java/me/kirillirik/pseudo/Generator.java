@@ -18,9 +18,7 @@ public abstract class Generator extends Analyzer {
         length = 0;
 
         for (int i = 0; i < symbols; i++) {
-            final int number = random(0, 32);
-            System.out.println("I " + number + " C " + number);
-            map.merge(number, 1, Integer::sum);
+            map.merge(random(0, 32), 1, Integer::sum);
             length++;
         }
     }

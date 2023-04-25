@@ -4,6 +4,7 @@ import imgui.ImGui;
 import me.kirillirik.analyzer.Analyzer;
 import me.kirillirik.analyzer.ImageAnalyzer;
 import me.kirillirik.analyzer.TextAnalyzer;
+import me.kirillirik.cardano.Cardano;
 import me.kirillirik.pseudo.BBSGenerator;
 import me.kirillirik.pseudo.Generator;
 import me.kirillirik.pseudo.LFSRGenerator;
@@ -13,6 +14,8 @@ public final class Selector {
 
     private Analyzer analyzer = null;
     private Generator generator = null;
+
+    private Cardano cardano = null;
 
     public void update() {
         if (analyzer != null) {
@@ -36,6 +39,11 @@ public final class Selector {
         }
 
         ImGui.begin("Select tool");
+
+        if (ImGui.button("Cardano")) {
+            cardano = new Cardano();
+            cardano.analyze();
+        }
 
         if (ImGui.button("Generator LGG")) {
             generator = new LGGGenerator();
