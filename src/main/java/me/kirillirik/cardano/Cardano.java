@@ -1,8 +1,10 @@
 package me.kirillirik.cardano;
 
+import imgui.ImGui;
 import me.kirillirik.analyzer.Analyzer;
 import me.kirillirik.utils.NumericUtils;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -21,7 +23,20 @@ public final class Cardano extends Analyzer {
     public Cardano() {
         super("");
 
-        text = "Текст после шифрования станет непонятным так ведь да нет или не знаешь";
+        text = """
+                В Израиле сходятся границы трёх растительных поясов: средиземноморского, ирано-туранского и сахаро-синдского. В стране насчитывается примерно 2600 видов растений (250 — эндемичные) из 700 родов, входящих в 115 семейств[212].
+                 К моменту обретения Израилем независимости на его территории Еврейским национальным фондом было высажено 4,5 млн деревьев, а к XXI веку их в стране насчитывается более 200 миллионов[234].
+                  Из 6 % территории страны, покрытых лесом, около ⅔ являются искусственными насаждениями[176]. В лесопосадках чаще всего сажают алеппскую сосну, акацию и эвкалипт,
+                   в то время как для озеленения населённых пунктов используют кипарис, казуарину, фикус, тамариск, олеандр и фисташку[212]. Природный лес сохранился в горных районах — в Галилее, Самарии, Иудейских горах и на кряже Кармель;
+                    естественная растительность также сохранилась в пустынных районах[48].
+                                
+                Фауна Израиля насчитывает более 100 видов млекопитающих[176], свыше 600 видов птиц[212], около 100 видов рептилий[176],
+                 в том числе 30 видов змей[212], и около десятка видов амфибий[235], а также тысячи видов насекомых, включая более ста видов бабочек[48].
+                  Более половины видов птиц постоянно обитают в стране, остальные являются перелётными. В прибрежных водах Израиля встречаются дельфины и дюгони[212].
+                                
+                В общей сложности, в Израиле создано около 400 заповедников и национальных парков, в совокупности занимающих порядка четверти территории страны[236].
+                 В 1963 году под эгидой министерства главы правительства в Израиле сформировано Управление заповедниками, вместе с Обществом по защите окружающей среды ведущее работы по охране и восстановлению естественных ландшафтов[237].
+                """;
         charArray = text.replaceAll("\\s", "").toCharArray();
         blockSize = findLod((int) Math.floor(charArray.length / 4.0D));
         halfSize = (int) Math.floor(Math.log(blockSize) / Math.log(2));
@@ -101,6 +116,38 @@ public final class Cardano extends Analyzer {
         }
 
         field.debug();
+
+        for (final String b : field.getMatrix()) {
+            if (b == null || b.isEmpty()) {
+                continue;
+            }
+
+            try {
+                for (final Byte bt : b.getBytes("cp866")) {
+                    map.merge(Byte.toUnsignedInt(bt), 1, Integer::sum);
+                    length++;
+                }
+            } catch (UnsupportedEncodingException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    @Override
+    public void update() {
+        ImGui.begin("Cardano");
+
+        if (ImGui.button("Change analyzer")) {
+            needClose = true;
+        }
+
+        ImGui.sameLine();
+
+        if (ImGui.button(showTable ? "Show graph" : "Show table")) {
+            showTable = !showTable;
+        }
+
+        super.update();
     }
 
     private void rotate(List<Integer> key, int id, int xOffset, int yOffset) {

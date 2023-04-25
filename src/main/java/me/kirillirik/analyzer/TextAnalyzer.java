@@ -27,7 +27,7 @@ public class TextAnalyzer extends Analyzer {
 
     @Override
     public void update() {
-        ImGui.begin("Работа?");
+        ImGui.begin("Text analyzer");
 
         if (ImGui.button("Change analyzer")) {
             needClose = true;

@@ -15,8 +15,6 @@ public final class Selector {
     private Analyzer analyzer = null;
     private Generator generator = null;
 
-    private Cardano cardano = null;
-
     public void update() {
         if (analyzer != null) {
             analyzer.update();
@@ -41,8 +39,7 @@ public final class Selector {
         ImGui.begin("Select tool");
 
         if (ImGui.button("Cardano")) {
-            cardano = new Cardano();
-            cardano.analyze();
+            analyzer = new Cardano();
         }
 
         if (ImGui.button("Generator LGG")) {

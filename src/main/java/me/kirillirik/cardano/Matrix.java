@@ -15,6 +15,10 @@ public final class Matrix <T> {
         this.matrix.setSize(size * size);
     }
 
+    public Vector<T> getMatrix() {
+        return matrix;
+    }
+
     public void put(int x, int y, T value) {
         matrix.set(x + y * size, value);
     }
