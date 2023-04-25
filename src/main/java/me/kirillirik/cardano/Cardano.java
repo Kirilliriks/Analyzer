@@ -1,6 +1,7 @@
 package me.kirillirik.cardano;
 
 import imgui.ImGui;
+import imgui.flag.ImGuiTableFlags;
 import me.kirillirik.analyzer.Analyzer;
 import me.kirillirik.utils.NumericUtils;
 
@@ -19,6 +20,8 @@ public final class Cardano extends Analyzer {
     private final Matrix<String> field;
     private final Matrix<String> mask;
     private final Matrix<Integer> rotationMatrix;
+
+    private boolean showMatrix;
 
     public Cardano() {
         super("");
@@ -147,7 +150,72 @@ public final class Cardano extends Analyzer {
             showTable = !showTable;
         }
 
-        super.update();
+        if (ImGui.button(showMatrix ? "Hide matrix" : "Show matrix")) {
+            showMatrix = !showMatrix;
+        }
+
+        if (!showMatrix) {
+            super.update();
+            return;
+        }
+
+        final int flags = ImGuiTableFlags.Resizable | ImGuiTableFlags.ScrollY | ImGuiTableFlags.SizingFixedFit;
+
+        ImGui.text("Текст");
+        if (ImGui.beginTable("#cardano_table", halfSize * 2, flags, ImGui.getWindowSizeX(), ImGui.getWindowSizeY() / 2)) {
+            for (int i = 0; i < halfSize * 2; i++) {
+                ImGui.tableSetupColumn(String.valueOf(i + 1));
+            }
+
+            ImGui.tableHeadersRow();
+
+            int i = halfSize * 2;
+            for (String b : field.getMatrix()) {
+                if (b == null || b.isEmpty()) {
+                    b = " ";
+                }
+
+                if (i == halfSize * 2) {
+                    ImGui.tableNextRow(ImGuiTableFlags.None);
+                    i = 0;
+                }
+
+                ImGui.tableSetColumnIndex(i);
+                ImGui.text(b);
+                i++;
+            }
+
+            ImGui.endTable();
+        }
+
+        if (ImGui.beginTable("#mask_table", halfSize * 2, flags, ImGui.getWindowSizeX(), ImGui.getWindowSizeY() / 3, 1000)) {
+            for (int i = 0; i < halfSize * 2; i++) {
+                ImGui.tableSetupColumn(String.valueOf(i + 1));
+            }
+
+            ImGui.tableHeadersRow();
+
+            int i = halfSize * 2;
+            for (String b : mask.getMatrix()) {
+                if (b == null || b.isEmpty()) {
+                    b = " ";
+                }
+
+                if (i == halfSize * 2) {
+                    ImGui.tableNextRow(ImGuiTableFlags.None);
+                    i = 0;
+                }
+
+                ImGui.tableSetColumnIndex(i);
+                ImGui.text(b);
+                i++;
+            }
+
+            ImGui.endTable();
+        }
+
+
+        ImGui.end();
     }
 
     private void rotate(List<Integer> key, int id, int xOffset, int yOffset) {
