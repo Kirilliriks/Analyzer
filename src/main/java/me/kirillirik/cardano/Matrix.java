@@ -43,7 +43,7 @@ public final class Matrix <T> {
             for (int x = 0; x < size; x++) {
                 final T value = matrix.get(x + y * size);
                 if (value == null) {
-                    System.out.print("$ ");
+                    System.out.print("  ");
                 } else {
                     System.out.print(value + " ");
                 }

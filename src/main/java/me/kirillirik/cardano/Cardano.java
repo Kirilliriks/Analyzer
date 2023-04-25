@@ -21,13 +21,22 @@ public final class Cardano extends Analyzer {
     public Cardano() {
         super("");
 
-        text = "Текст после шифрования станет непонятным";
+        text = "Текст после шифрования станет непонятным так ведь да нет или не знаешь";
         charArray = text.replaceAll("\\s", "").toCharArray();
-        blockSize = (int) Math.floor(charArray.length / 4.0D);
+        blockSize = findLod((int) Math.floor(charArray.length / 4.0D));
         halfSize = (int) Math.floor(Math.log(blockSize) / Math.log(2));
         field = new Matrix<>(halfSize * 2);
         mask = new Matrix<>(halfSize * 2);
         rotationMatrix = new Matrix<>(halfSize);
+    }
+
+    private int findLod(int size) {
+        int result = 2;
+        while (result * result < size) {
+            result += 1;
+        }
+
+        return result * result;
     }
 
     @Override
@@ -47,7 +56,6 @@ public final class Cardano extends Analyzer {
         for (int y = 0; y < halfSize; y++) {
             for (int x = 0; x < halfSize; x++) {
                 rotationMatrix.put(x, y, i);
-                field.put(x, y, String.valueOf(i));
                 mask.put(x, y, " ");
 
                 for (int k = 0; k < blockSize; k++) {
@@ -59,7 +67,6 @@ public final class Cardano extends Analyzer {
                 i++;
             }
         }
-        field.debug();
 
         rotate(key, 2, halfSize, 0);
         rotate(key, 3, halfSize, halfSize);
@@ -69,7 +76,12 @@ public final class Cardano extends Analyzer {
 
         for (i = 0; i < 4; i++) {
             for (int charIndex = 0; charIndex < blockSize; charIndex++) {
-                final char ch = charArray[(i * blockSize) + charIndex];
+                final int index = (i * blockSize) + charIndex;
+                if (index >= charArray.length) {
+                    continue;
+                }
+
+                final char ch = charArray[index];
 
                 for (int y = 0; y < halfSize * 2; y++) {
                     for (int x = 0; x < halfSize * 2; x++) {
@@ -96,7 +108,6 @@ public final class Cardano extends Analyzer {
         for (int y = 0; y < halfSize; y++) {
             for (int x = 0; x < halfSize; x++) {
                 final int value = rotationMatrix.get(x, y);
-                field.put(x + xOffset, y + yOffset, String.valueOf(value));
                 mask.put(x + xOffset, y + yOffset, " ");
 
                 for (int k = 0; k < blockSize; k++) {
@@ -106,6 +117,5 @@ public final class Cardano extends Analyzer {
                 }
             }
         }
-        field.debug();
     }
 }
