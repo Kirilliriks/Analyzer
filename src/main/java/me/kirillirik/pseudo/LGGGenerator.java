@@ -12,7 +12,7 @@ public final class LGGGenerator extends Generator {
     }
 
     @Override
-    protected int random(int min, int max) {
+    public int random(int min, int max) {
         next = Math.abs((next * a + c) % m);
         return Math.abs(min + next % (max - min));
     }

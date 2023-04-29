@@ -5,6 +5,9 @@ import me.kirillirik.analyzer.Analyzer;
 import me.kirillirik.analyzer.ImageAnalyzer;
 import me.kirillirik.analyzer.TextAnalyzer;
 import me.kirillirik.cardano.Cardano;
+import me.kirillirik.other.BitsCoder;
+import me.kirillirik.other.Caesar;
+import me.kirillirik.other.StringCoder;
 import me.kirillirik.pseudo.BBSGenerator;
 import me.kirillirik.pseudo.Generator;
 import me.kirillirik.pseudo.LFSRGenerator;
@@ -40,6 +43,19 @@ public final class Selector {
 
         if (ImGui.button("Cardano")) {
             analyzer = new Cardano();
+        }
+
+
+        if (ImGui.button("Caesar coder")) {
+            analyzer = new Caesar();
+        }
+
+        if (ImGui.button("String coder")) {
+            analyzer = new StringCoder();
+        }
+
+        if (ImGui.button("Bits coder")) {
+            analyzer = new BitsCoder();
         }
 
         if (ImGui.button("Generator LGG")) {

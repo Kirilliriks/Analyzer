@@ -7,10 +7,6 @@ public abstract class Generator extends Analyzer {
 
     protected int next;
 
-    public Generator() {
-        super("");
-    }
-
     public void generate(int symbols) {
         init();
 
@@ -23,7 +19,7 @@ public abstract class Generator extends Analyzer {
         }
     }
 
-    protected abstract int random(int min, int max);
+    public abstract int random(int min, int max);
 
     protected void init() {
         next = (int) System.currentTimeMillis();

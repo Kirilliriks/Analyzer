@@ -17,7 +17,7 @@ public final class BBSGenerator extends Generator {
     }
 
     @Override
-    protected int random(int min, int max) {
+    public int random(int min, int max) {
         next = (next * next) % m;
         return Math.abs(min + next % (max - min));
     }

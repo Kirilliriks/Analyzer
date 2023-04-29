@@ -23,6 +23,11 @@ public abstract class Analyzer {
     protected boolean needClose = false;
     protected boolean showTable = false;
 
+    public Analyzer() {
+        this.filePath = null;
+        clearMap();
+    }
+
     public Analyzer(String filePath) {
         this.filePath = filePath;
 
