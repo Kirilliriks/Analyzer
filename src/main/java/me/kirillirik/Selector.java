@@ -5,6 +5,7 @@ import me.kirillirik.analyzer.Analyzer;
 import me.kirillirik.analyzer.ImageAnalyzer;
 import me.kirillirik.analyzer.TextAnalyzer;
 import me.kirillirik.cardano.Cardano;
+import me.kirillirik.feist.Feist;
 import me.kirillirik.other.BitsCoder;
 import me.kirillirik.other.Caesar;
 import me.kirillirik.other.StringCoder;
@@ -41,10 +42,13 @@ public final class Selector {
 
         ImGui.begin("Select tool");
 
+        if (ImGui.button("Feist")) {
+            analyzer = new Feist();
+        }
+
         if (ImGui.button("Cardano")) {
             analyzer = new Cardano();
         }
-
 
         if (ImGui.button("Caesar coder")) {
             analyzer = new Caesar();
