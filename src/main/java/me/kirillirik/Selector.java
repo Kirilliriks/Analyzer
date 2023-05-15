@@ -6,6 +6,7 @@ import me.kirillirik.analyzer.ImageAnalyzer;
 import me.kirillirik.analyzer.TextAnalyzer;
 import me.kirillirik.cardano.Cardano;
 import me.kirillirik.feist.Feist;
+import me.kirillirik.feist.DESAnalyzer;
 import me.kirillirik.other.BitsCoder;
 import me.kirillirik.other.Caesar;
 import me.kirillirik.other.StringCoder;
@@ -41,6 +42,10 @@ public final class Selector {
         }
 
         ImGui.begin("Select tool");
+
+        if (ImGui.button("DES with modes")) {
+            analyzer = new DESAnalyzer();
+        }
 
         if (ImGui.button("Feist")) {
             analyzer = new Feist();

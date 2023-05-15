@@ -6,25 +6,19 @@ import me.kirillirik.pseudo.LFSRGenerator;
 import me.kirillirik.utils.PreparedText;
 
 import java.nio.charset.Charset;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
-public final class Feist extends Analyzer {
+public final class DESAnalyzer extends Analyzer {
 
     private final int rounds;
-    private final List<byte[]> steps = new ArrayList<>();
     private final byte[] key;
-    private final int[] selected = new int[1];
     private byte[] encodedText;
     private byte[] decodedText;
     private boolean showText;
 
-    public Feist() {
+    public DESAnalyzer() {
         this.rounds = 8;
         key = keygen();
-
-        selected[0] = 1;
     }
 
     @Override
@@ -34,15 +28,15 @@ public final class Feist extends Analyzer {
             bytes = Arrays.copyOf(bytes, bytes.length + 1);
         }
 
-        feist(bytes, key, false);
+        des(bytes, key, false);
 
         encodedText = new byte[bytes.length];
-        for (final byte b : steps.get(selected[0] - 1)) {
+        for (final byte b : bytes) {
             map.merge(Byte.toUnsignedInt(b), 1, Integer::sum);
             encodedText[length++] = (byte) Byte.toUnsignedInt(b);
         }
 
-        feist(bytes, key, true);
+        des(bytes, key, true);
 
         decodedText = new byte[bytes.length];
 
@@ -54,7 +48,7 @@ public final class Feist extends Analyzer {
 
     @Override
     public void update() {
-        ImGui.begin("Feist coder");
+        ImGui.begin("DES coder with modes");
 
         if (ImGui.button("Change analyzer")) {
             needClose = true;
@@ -68,11 +62,6 @@ public final class Feist extends Analyzer {
 
         if (ImGui.button(showText ? "Hide text" : "Show text")) {
             showText = !showText;
-        }
-
-        if (ImGui.sliderInt("Select step", selected, 1, rounds)) {
-            clearMap();
-            analyze();
         }
 
         if (showText) {
@@ -104,13 +93,9 @@ public final class Feist extends Analyzer {
 
     }
 
-    public void feist(byte[] byteArray, byte[] key, boolean reverse) {
+    public void des(byte[] byteArray, byte[] key, boolean reverse) {
         if (byteArray.length % 2 != 0) {
             throw new RuntimeException("Check this");
-        }
-
-        for (int i = 0; i < rounds; i++) {
-            steps.add(new byte[byteArray.length]);
         }
 
         for (int i = 0; i < byteArray.length - 1; i += 2) {     //Разбиваем на левый и правый блок
@@ -123,9 +108,6 @@ public final class Feist extends Analyzer {
                 if (j == rounds - 1) {
                     final byte x = (byte) (key[ki] ^ right);
                     left ^= byteFunction(x);
-
-                    steps.get(j)[i] = left;
-                    steps.get(j)[i + 1] = right;
                     continue;
                 }
 
@@ -141,9 +123,6 @@ public final class Feist extends Analyzer {
                 } else {
                     ki++;
                 }
-
-                steps.get(j)[i] = left;
-                steps.get(j)[i + 1] = right;
             }
 
             byteArray[i] = left;
