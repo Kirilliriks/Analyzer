@@ -10,6 +10,11 @@ public final class DES {
     public static int BLOCK_LENGTH = 64;
 
     private final long[] keys = new long[17];
+    private Mode mode = Mode.ECB;
+
+    public void setMode(Mode mode) {
+        this.mode = mode;
+    }
 
     public String crypt(String key, String inputBinary, boolean encrypt) {
         buildKeys(DESUtils.hash(key)); // Build the key schedule
@@ -27,10 +32,70 @@ public final class DES {
             binaryBlocks[i] = binaryText.substring(i * BLOCK_LENGTH, (i + 1) * BLOCK_LENGTH);
         }
 
+        final var temp = new char[64];
+        Arrays.fill(temp, '1');
+        String back =  new String(temp);
+
         final var cipherBlocks = new String[binaryText.length() / BLOCK_LENGTH];
         for (int i = 0; i < cipherBlocks.length; i++) { // Encrypt the blocks
-            final String bin = binaryBlocks[i];
-            cipherBlocks[i] = cryptBlock(bin, encrypt);
+            String bin = binaryBlocks[i];
+            String result;
+            switch (mode) {
+                default -> result = cryptBlock(bin, encrypt);
+                case CBC -> {
+                    if (encrypt) {
+                        bin = DESUtils.XOR(bin, back);
+                        result = cryptBlock(bin, true);
+                        back = result;
+                    } else {
+                        result = cryptBlock(bin, false);
+                        result = DESUtils.XOR(result, back);
+                        back = bin;
+                    }
+                }
+                case OFB -> {
+                    result = cryptBlock(back, true);
+                    back = result;
+                    result = DESUtils.XOR(result, bin);
+                }
+                case CFB -> {
+                    if (encrypt) {
+                        result = cryptBlock(back, true);
+
+                        String resultPart = result.substring(0, BLOCK_LENGTH / 2);
+                        String binPart = bin.substring(0, BLOCK_LENGTH / 2);
+                        String temp1 = DESUtils.XOR(resultPart, binPart);
+
+                        resultPart = result.substring(BLOCK_LENGTH / 2, BLOCK_LENGTH);
+                        back = resultPart + temp1;
+
+                        binPart = bin.substring(BLOCK_LENGTH / 2, BLOCK_LENGTH);
+                        result = cryptBlock(back, true);
+                        String temp2 = DESUtils.XOR(resultPart, binPart);
+
+                        back = result.substring(BLOCK_LENGTH / 2, BLOCK_LENGTH) + temp2;
+                        result = temp1 + temp2;
+                    } else {
+                        result = cryptBlock(back, true);
+
+                        String resultPart = result.substring(0, BLOCK_LENGTH / 2);
+                        String binPart = bin.substring(0, BLOCK_LENGTH / 2);
+                        String temp1 = DESUtils.XOR(resultPart, binPart);
+
+                        resultPart = result.substring(BLOCK_LENGTH / 2, BLOCK_LENGTH);
+                        back = resultPart + binPart;
+
+                        binPart = bin.substring(BLOCK_LENGTH / 2, BLOCK_LENGTH);
+                        result = cryptBlock(back, true);
+                        String temp2 = DESUtils.XOR(resultPart, binPart);
+
+                        back = result.substring(BLOCK_LENGTH / 2, BLOCK_LENGTH) + binPart;
+                        result = temp1 + temp2;
+                    }
+                }
+            }
+
+            cipherBlocks[i] = result;
         }
 
         Arrays.fill(keys, 0); // Clear keys
@@ -38,15 +103,15 @@ public final class DES {
         return StringUtils.join(cipherBlocks);
     }
 
-    public String cryptBlock(String plaintextBlock, boolean encrypt) {
-        final int length = plaintextBlock.length();
+    private String cryptBlock(String binaryBlock, boolean encrypt) {
+        final int length = binaryBlock.length();
         if (length != BLOCK_LENGTH) {
             throw new RuntimeException("Input block length is not " + BLOCK_LENGTH + " bits! It's is " + length);
         }
 
         final var out = new StringBuilder();
         for (final int j : DESMatrix.IP) {
-            out.append(plaintextBlock.charAt(j - 1)); //Initial permutation
+            out.append(binaryBlock.charAt(j - 1)); //Initial permutation
         }
 
         String mL = out.substring(0, BLOCK_LENGTH / 2);
@@ -79,7 +144,7 @@ public final class DES {
         return output.toString();
     }
 
-    public void buildKeys(long key) {
+    private void buildKeys(long key) {
         final var binKey = new StringBuilder(Long.toBinaryString(key)); // Convert long value to 64bit binary string
         while (binKey.length() < BLOCK_LENGTH) { // Add leading zeros if not at key length for ease of computations
             binKey.insert(0, "0");
@@ -118,7 +183,7 @@ public final class DES {
         }
     }
 
-    public enum MODE {
+    public enum Mode {
         ECB,
         CBC,
         CFB,
