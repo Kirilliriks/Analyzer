@@ -1,12 +1,13 @@
 package me.kirillirik;
 
 import imgui.ImGui;
-import me.kirillirik.analyzer.Analyzer;
 import me.kirillirik.analyzer.ImageAnalyzer;
 import me.kirillirik.analyzer.TextAnalyzer;
 import me.kirillirik.cardano.Cardano;
 import me.kirillirik.feist.Feist;
 import me.kirillirik.feist.DESAnalyzer;
+import me.kirillirik.last.DiffiHelm;
+import me.kirillirik.last.RSA;
 import me.kirillirik.other.BitsCoder;
 import me.kirillirik.other.Caesar;
 import me.kirillirik.other.StringCoder;
@@ -17,15 +18,15 @@ import me.kirillirik.pseudo.LGGGenerator;
 
 public final class Selector {
 
-    private Analyzer analyzer = null;
+    private Widget widget = null;
     private Generator generator = null;
 
     public void update() {
-        if (analyzer != null) {
-            analyzer.update();
+        if (widget != null) {
+            widget.update();
 
-            if (analyzer.isNeedClose()) {
-                analyzer = null;
+            if (widget.isNeedClose()) {
+                widget = null;
             }
 
             return;
@@ -43,28 +44,36 @@ public final class Selector {
 
         ImGui.begin("Select tool");
 
+        if (ImGui.button("RSA")) {
+            widget = new RSA();
+        }
+
+        if (ImGui.button("Diffie Helman")) {
+            widget = new DiffiHelm();
+        }
+
         if (ImGui.button("DES with modes")) {
-            analyzer = new DESAnalyzer();
+            widget = new DESAnalyzer();
         }
 
         if (ImGui.button("Feist")) {
-            analyzer = new Feist();
+            widget = new Feist();
         }
 
         if (ImGui.button("Cardano")) {
-            analyzer = new Cardano();
+            widget = new Cardano();
         }
 
         if (ImGui.button("Caesar coder")) {
-            analyzer = new Caesar();
+            widget = new Caesar();
         }
 
         if (ImGui.button("String coder")) {
-            analyzer = new StringCoder();
+            widget = new StringCoder();
         }
 
         if (ImGui.button("Bits coder")) {
-            analyzer = new BitsCoder();
+            widget = new BitsCoder();
         }
 
         if (ImGui.button("Generator LGG")) {
@@ -83,15 +92,15 @@ public final class Selector {
         }
 
         if (ImGui.button("Text analyzer")) {
-            analyzer = new TextAnalyzer();
+            widget = new TextAnalyzer();
         }
 
         if (ImGui.button("Image analyzer")) {
-            analyzer = new ImageAnalyzer();
+            widget = new ImageAnalyzer();
         }
 
-        if (analyzer != null) {
-            analyzer.analyze();
+        if (widget != null) {
+            widget.analyze();
         }
 
         ImGui.end();

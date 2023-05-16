@@ -6,13 +6,14 @@ import imgui.extension.implot.ImPlot;
 import imgui.extension.implot.flag.ImPlotAxisFlags;
 import imgui.flag.ImGuiCond;
 import imgui.flag.ImGuiTableFlags;
+import me.kirillirik.Widget;
 
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 
-public abstract class Analyzer {
+public abstract class Analyzer extends Widget {
 
     public static final Logger LOGGER = Logger.getLogger("Analyzer");
 
@@ -20,7 +21,6 @@ public abstract class Analyzer {
     protected final Map<Integer, Integer> map = new HashMap<>();
     protected int length = 0;
     protected double entropy = 0;
-    protected boolean needClose = false;
     protected boolean showTable = false;
 
     public Analyzer() {
@@ -43,10 +43,12 @@ public abstract class Analyzer {
         }
     }
 
+    @Override
     public void analyze() {
 
     }
 
+    @Override
     public void update() {
         entropy = 0;
 
@@ -74,16 +76,6 @@ public abstract class Analyzer {
                     final double yPos = entry.getValue();
                     x[count] = xPos;
                     y[count] = yPos;
-
-                    try {
-                        ImPlot.plotText(count + " (" + new String(new byte[]{entry.getKey().byteValue()}, "cp866") + ")", xPos, -1.0f);
-                    } catch (UnsupportedEncodingException e) {
-                        throw new RuntimeException(e);
-                    }
-
-                    if (yPos != 0) {
-                        ImPlot.plotText(String.format("%.3f", h) + "   (" + entry.getValue() + ")", xPos, yPos + 10.0f, true);
-                    }
 
                     count++;
                 }
@@ -153,9 +145,5 @@ public abstract class Analyzer {
 
         ImGui.text("Entropy " + (float) entropy);
         ImGui.end();
-    }
-
-    public boolean isNeedClose() {
-        return needClose;
     }
 }
